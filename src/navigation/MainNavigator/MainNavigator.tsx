@@ -1,0 +1,45 @@
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useSelector, useDispatch } from "react-redux";
+
+import HomeScreen from "../../screens/HomeScreen";
+import GameScreen from "../../screens/GameScreen";
+import { RootStackParamList } from "../types";
+import { RootState } from "../../store";
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+import GameScreenContainer from "../../components/GameScreenContainer";
+import InventoryScreen from "../../screens/InventoryScreen";
+import DeathScreen from "../../screens/DeathScreen";
+import { StyleSheet, View } from "react-native";
+import SkillsScreen from "../../screens/SkillsScreen";
+
+const MainNavigator = () => {
+  return (
+    <View style={styles.container}>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Home"
+          screenOptions={{ headerShown: false }}
+        >
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Death" component={DeathScreen} />
+          <Stack.Screen name="Inventory" component={InventoryScreen} />
+          <Stack.Screen name="Game" component={GameScreenContainer} />
+          <Stack.Screen name="Skills" component={SkillsScreen} />
+          <Stack.Screen name="Settings" component={GameScreenContainer} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </View>
+  );
+};
+
+export default MainNavigator;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#121212",
+  },
+});

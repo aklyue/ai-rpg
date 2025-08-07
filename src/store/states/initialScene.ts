@@ -1,0 +1,7 @@
+import { Scene } from "../types/game";
+
+export const initialScene: Scene = {
+  background: require("../../assets/images/dark_room.jpg"),
+  text: "Вы очутились в странной темной комнате с двумя дверьми. На левой надпись: 'Вход воспрещен', на правой - 'Туалет'. Вы также замечаете маленькую шкатулку, стоящую в углу комнаты.",
+  sceneId: "1",
+};
