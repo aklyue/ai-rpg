@@ -1,5 +1,5 @@
 export async function requestGigaChatScene(prompt: string): Promise<string> {
-  const response = await fetch("http://192.168.0.157:3000/gigachat", {
+  const response = await fetch("https://ai-rpg-proxy.onrender.com/gigachat", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

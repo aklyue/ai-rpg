@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ai-rpg",
+    "name": "AI RPG",
     "slug": "ai-rpg",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -13,20 +13,30 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.aklyue.airpg",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.aklyue.airpg"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "106f500a-b703-48bb-a6cc-a14bce4930da"
+      }
+    }
   }
 }
