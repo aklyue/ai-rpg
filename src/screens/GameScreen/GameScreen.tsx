@@ -14,6 +14,10 @@ import { useFonts } from "expo-font";
 import { useAppSelector } from "../../store/hooks";
 import TypewriterText from "../../components/TypewriterText";
 import useGameActions from "../../hooks/useGameActions";
+import ThreeDotsLoading from "../../components/UI/ThreeDotsLoading";
+import Backpack from "../../assets/ui/backpack.svg";
+import Book from "../../assets/ui/book.svg";
+import Bed from "../../assets/ui/bed.svg";
 
 interface GameScreenProps {
   text: string;
@@ -67,7 +71,6 @@ const GameScreen: React.FC<GameScreenProps> = ({
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "padding"}
     >
-      {/* Верхняя шапка */}
       <View style={styles.topPanel}>
         <View style={styles.topLeftButtonsContainer}>
           <TouchableOpacity onPress={onExitToMenu} style={styles.button}>
@@ -76,23 +79,19 @@ const GameScreen: React.FC<GameScreenProps> = ({
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={openInventory} style={styles.button}>
-            <Text style={[styles.buttonText, { fontFamily: "PressStart2P" }]}>
-              Инвентарь
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.uiBtns}>
+            <TouchableOpacity onPress={openInventory} style={styles.button}>
+              <Backpack width={30} height={30} color="#FFF" />
+            </TouchableOpacity>
 
-          <TouchableOpacity onPress={openSkills} style={styles.button}>
-            <Text style={[styles.buttonText, { fontFamily: "PressStart2P" }]}>
-              Способности
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity onPress={openSkills} style={styles.button}>
+              <Book width={30} height={30} color="#FFF" />
+            </TouchableOpacity>
 
-          <TouchableOpacity onPress={rest} style={styles.button}>
-            <Text style={[styles.buttonText, { fontFamily: "PressStart2P" }]}>
-              Отдых
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity onPress={rest} style={styles.button}>
+              <Bed width={30} height={30} color="#FFF" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.topRightStats}>
@@ -203,19 +202,21 @@ const GameScreen: React.FC<GameScreenProps> = ({
         </View>
       </View>
 
-      {/* Основной контент — текст, скролл */}
       <ScrollView
         style={styles.textContainer}
         contentContainerStyle={styles.scrollContentContainer}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"
       >
-        <TypewriterText fullText={text} speed={speed} sceneId={sceneId} />
-        {loading && <ActivityIndicator size="large" color="#fff" />}
-        {error && <Text style={styles.errorText}>Ошибка: {error}</Text>}
+        {loading ? (
+          <ThreeDotsLoading />
+        ) : error ? (
+          <Text style={styles.errorText}>Ошибка: {error}</Text>
+        ) : (
+          <TypewriterText fullText={text} speed={speed} sceneId={sceneId} />
+        )}
       </ScrollView>
 
-      {/* Нижний инпут */}
       <View style={styles.keyboardAvoid}>
         {!loading && (
           <View style={styles.inputContainer}>
@@ -278,7 +279,14 @@ const styles = StyleSheet.create({
 
   topLeftButtonsContainer: {
     flexDirection: "column",
+    justifyContent: "space-between",
     gap: 12,
+  },
+
+  uiBtns: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 10,
   },
 
   button: {
@@ -287,6 +295,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     justifyContent: "center",
+    alignSelf: "flex-start",
     marginBottom: 8,
   },
 
