@@ -44,6 +44,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
     PressStart2P: require("../../assets/fonts/PressStart2P/PressStart2P-Regular.ttf"),
   });
   const { day } = useAppSelector((state) => state.game);
+  const { speed } = useAppSelector((state) => state.type);
 
   const {
     inputText,
@@ -209,7 +210,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"
       >
-        <TypewriterText fullText={text} speed={30} sceneId={sceneId} />
+        <TypewriterText fullText={text} speed={speed} sceneId={sceneId} />
         {loading && <ActivityIndicator size="large" color="#fff" />}
         {error && <Text style={styles.errorText}>Ошибка: {error}</Text>}
       </ScrollView>

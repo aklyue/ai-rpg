@@ -1,12 +1,9 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { useSelector, useDispatch } from "react-redux";
 
 import HomeScreen from "../../screens/HomeScreen";
-import GameScreen from "../../screens/GameScreen";
 import { RootStackParamList } from "../types";
-import { RootState } from "../../store";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 import GameScreenContainer from "../../components/GameScreenContainer";
@@ -14,6 +11,7 @@ import InventoryScreen from "../../screens/InventoryScreen";
 import DeathScreen from "../../screens/DeathScreen";
 import { StyleSheet, View } from "react-native";
 import SkillsScreen from "../../screens/SkillsScreen";
+import SettingsScreen from "../../screens/SettingsScreen";
 
 const MainNavigator = () => {
   return (
@@ -28,7 +26,7 @@ const MainNavigator = () => {
           <Stack.Screen name="Inventory" component={InventoryScreen} />
           <Stack.Screen name="Game" component={GameScreenContainer} />
           <Stack.Screen name="Skills" component={SkillsScreen} />
-          <Stack.Screen name="Settings" component={GameScreenContainer} />
+          <Stack.Screen name="Settings" component={SettingsScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>
