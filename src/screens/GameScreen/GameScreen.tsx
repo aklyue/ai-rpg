@@ -11,13 +11,19 @@ import {
   ScrollView,
 } from "react-native";
 import { useFonts } from "expo-font";
-import { useAppSelector } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import TypewriterText from "../../components/TypewriterText";
 import useGameActions from "../../hooks/useGameActions";
 import ThreeDotsLoading from "../../components/UI/ThreeDotsLoading";
 import Backpack from "../../assets/ui/backpack.svg";
 import Book from "../../assets/ui/book.svg";
 import Bed from "../../assets/ui/bed.svg";
+import Settings from "../../assets/ui/settings.svg";
+import Exit from "../../assets/ui/exit.svg";
+import Save from "../../assets/ui/save.svg";
+import { useNavigation } from "@react-navigation/native";
+import { SettingsScreenNavigationProp } from "../../navigation/types";
+import { loadGameState, saveGameState } from "../../store/slices/gameSlice";
 
 interface GameScreenProps {
   text: string;
@@ -44,11 +50,14 @@ const GameScreen: React.FC<GameScreenProps> = ({
   error,
   onExitToMenu,
 }) => {
+  const dispatch = useAppDispatch();
   const [fontsLoaded] = useFonts({
     PressStart2P: require("../../assets/fonts/PressStart2P/PressStart2P-Regular.ttf"),
   });
   const { day } = useAppSelector((state) => state.game);
   const { speed } = useAppSelector((state) => state.type);
+  const navigation = useNavigation<SettingsScreenNavigationProp>();
+  const [save, setSave] = useState(false);
 
   const {
     inputText,
@@ -62,6 +71,14 @@ const GameScreen: React.FC<GameScreenProps> = ({
     onUserInput,
   });
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      dispatch(saveGameState());
+    }, 600000);
+
+    return () => clearInterval(interval);
+  }, [dispatch]);
+
   if (!fontsLoaded) {
     return null;
   }
@@ -71,25 +88,47 @@ const GameScreen: React.FC<GameScreenProps> = ({
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "padding"}
     >
+      {save && <Text style={styles.save}>Игра сохранена</Text>}
       <View style={styles.topPanel}>
         <View style={styles.topLeftButtonsContainer}>
-          <TouchableOpacity onPress={onExitToMenu} style={styles.button}>
-            <Text style={[styles.buttonText, { fontFamily: "PressStart2P" }]}>
-              Выйти в меню
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.uiBtns}>
+            <TouchableOpacity onPress={onExitToMenu} style={styles.button}>
+              <Exit width={40} height={40} color="#FFF" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                dispatch(saveGameState());
+                setSave(true);
+                setTimeout(() => {
+                  setSave(false);
+                }, 3000);
+              }}
+              style={styles.button}
+            >
+              <Save width={40} height={40} color="#FFF" />
+            </TouchableOpacity>
+          </View>
 
           <View style={styles.uiBtns}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("Settings", { screen: "Game" })
+              }
+              style={styles.button}
+            >
+              <Settings width={40} height={40} color="#FFF" />
+            </TouchableOpacity>
             <TouchableOpacity onPress={openInventory} style={styles.button}>
-              <Backpack width={30} height={30} color="#FFF" />
+              <Backpack width={40} height={40} color="#FFF" />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.uiBtns}>
+            <TouchableOpacity onPress={rest} style={styles.button}>
+              <Bed width={40} height={40} color="#FFF" />
             </TouchableOpacity>
 
             <TouchableOpacity onPress={openSkills} style={styles.button}>
-              <Book width={30} height={30} color="#FFF" />
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={rest} style={styles.button}>
-              <Bed width={30} height={30} color="#FFF" />
+              <Book width={40} height={40} color="#FFF" />
             </TouchableOpacity>
           </View>
         </View>
@@ -286,7 +325,7 @@ const styles = StyleSheet.create({
   uiBtns: {
     display: "flex",
     flexDirection: "row",
-    gap: 10,
+    gap: 12,
   },
 
   button: {
@@ -296,7 +335,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     justifyContent: "center",
     alignSelf: "flex-start",
-    marginBottom: 8,
   },
 
   buttonText: {
@@ -407,6 +445,17 @@ const styles = StyleSheet.create({
 
   sendButtonText: {
     color: "#fff",
+  },
+
+  save: {
+    position: "absolute",
+    color: "#67bf73",
+    bottom: 100,
+    left: 0,
+    right: 0,
+    fontFamily: "PressStart2P",
+    zIndex: 101,
+    textAlign: "center",
   },
 });
 

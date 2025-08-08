@@ -7,7 +7,7 @@ export type RootStackParamList = {
   Inventory: undefined;
   Skills: undefined;
   Stats: undefined;
-  Settings: undefined;
+  Settings: { screen?: Exclude<keyof RootStackParamList, "Settings"> };
 };
 
 export type HomeScreenNavigationProp = NativeStackNavigationProp<

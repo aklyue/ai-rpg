@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -12,8 +12,15 @@ import DeathScreen from "../../screens/DeathScreen";
 import { StyleSheet, View } from "react-native";
 import SkillsScreen from "../../screens/SkillsScreen";
 import SettingsScreen from "../../screens/SettingsScreen";
+import { useAppDispatch } from "../../store/hooks";
+import { loadGameState } from "../../store/slices/gameSlice";
 
 const MainNavigator = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(loadGameState());
+  }, [dispatch]);
   return (
     <View style={styles.container}>
       <NavigationContainer>

@@ -12,9 +12,11 @@ type Props = NativeStackScreenProps<RootStackParamList, "Settings">;
 
 const marks = [10, 25, 50, 75, 100];
 
-const SettingsScreen: React.FC<Props> = ({ navigation }) => {
+const SettingsScreen: React.FC<Props> = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const reduxSpeed = useSelector((state: RootState) => state.type.speed);
+
+  const { screen } = route.params ?? {};
 
   const [localSpeed, setLocalSpeed] = useState(reduxSpeed);
 
@@ -31,7 +33,9 @@ const SettingsScreen: React.FC<Props> = ({ navigation }) => {
   });
 
   const goBack = () => {
-    navigation.navigate("Home");
+    if (screen) {
+      navigation.navigate(screen);
+    }
   };
 
   if (!fontsLoaded) {
@@ -101,7 +105,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#121212",
     padding: 20,
     alignItems: "center",
-    justifyContent: "center",
+    paddingTop: 80,
   },
   topLeft: {
     position: "absolute",
@@ -120,9 +124,9 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   title: {
-    fontSize: 18,
+    fontSize: 14,
     color: "#fff",
-    marginBottom: 40,
+    marginVertical: 20,
   },
   label: {
     fontSize: 10,

@@ -1,3 +1,5 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { AppDispatch, RootState } from "..";
 import { Scene, GameState } from "../types/game";
@@ -12,6 +14,8 @@ import { buildScenePrompt } from "../utils/buildScenePrompt";
 import { requestGigaChatScene } from "../api/gigachat";
 import { parseJsonFromText } from "../utils/parseJsonFromText";
 
+const STORAGE_KEY = "gameState";
+
 const initialState: GameState = {
   history: [],
   currentScene: initialScene,
@@ -22,6 +26,36 @@ const initialState: GameState = {
   error: undefined,
   inventory: initialInventory,
 };
+
+export const saveGameState = createAsyncThunk<void, void, { state: RootState }>(
+  "game/saveGameState",
+  async (_, thunkAPI) => {
+    try {
+      const state = thunkAPI.getState().game;
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      console.log("Игра сохранена");
+    } catch (err) {
+      console.error("Ошибка сохранения игры:", err);
+    }
+  }
+);
+
+export const loadGameState = createAsyncThunk<GameState | null, void>(
+  "game/loadGameState",
+  async () => {
+    try {
+      const saved = await AsyncStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        console.log("Сохранёнка загружена");
+        return JSON.parse(saved) as GameState;
+      }
+      return null;
+    } catch (err) {
+      console.error("Ошибка загрузки игры:", err);
+      return null;
+    }
+  }
+);
 
 export const fetchNextScene = createAsyncThunk<
   Scene,
@@ -133,7 +167,7 @@ const gameSlice = createSlice({
     },
     useRest(state) {
       state.stats.energy = clamp(state.stats.energy + 30, 0, 100);
-      state.currentScene.text += `\n\nВы немного отдохнули и восполнили энергию`
+      state.currentScene.text += `\n\nВы немного отдохнули и восполнили энергию`;
     },
   },
   extraReducers: (builder) => {
@@ -187,6 +221,11 @@ const gameSlice = createSlice({
       .addCase(fetchNextScene.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
+      })
+      .addCase(loadGameState.fulfilled, (state, action) => {
+        if (action.payload) {
+          return action.payload;
+        }
       });
   },
 });
