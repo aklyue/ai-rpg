@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useFonts } from "expo-font";
 import { useChangeSpeed } from "../../store/slices/typeSlice";
 import { RootState } from "../../store";
+import SoundManager from "../../preload/soundManager";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Settings">;
 
@@ -33,6 +34,7 @@ const SettingsScreen: React.FC<Props> = ({ navigation, route }) => {
   });
 
   const goBack = () => {
+    SoundManager.playClickSound();
     if (screen) {
       navigation.navigate(screen);
     }

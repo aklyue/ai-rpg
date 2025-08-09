@@ -5,25 +5,27 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Animated,
 } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
-import { AppDispatch, RootState } from "../../store";
 import { useSkill } from "../../store/slices/gameSlice";
 import { useFonts } from "expo-font";
 import { useNavigation } from "@react-navigation/native";
 import { GameScreenNavigationProp } from "../../navigation/types";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import SoundManager from "../../preload/soundManager";
 
 const Skills: React.FC = () => {
   const navigation = useNavigation<GameScreenNavigationProp>();
-  const skills = useSelector((state: RootState) => state.game.skills);
-  const mana = useSelector((state: RootState) => state.game.stats.mana);
-  const dispatch = useDispatch<AppDispatch>();
+  const skills = useAppSelector((state) => state.game.skills);
+  const mana = useAppSelector((state) => state.game.stats.mana);
+  const dispatch = useAppDispatch();
 
   const [fontsLoaded] = useFonts({
     PressStart2P: require("../../assets/fonts/PressStart2P/PressStart2P-Regular.ttf"),
   });
 
   const handleUseSkill = (key: string) => {
+    SoundManager.playClickSound();
     dispatch(useSkill(key));
     navigation.navigate("Game");
   };

@@ -13,16 +13,22 @@ const TypewriterText: React.FC<TypewriterTextProps> = ({
   speed = 50,
   sceneId,
 }) => {
-  const { displayedText } = useTypewriter({ fullText, speed, sceneId });
+  const { displayedText, skipAnimation } = useTypewriter({
+    fullText,
+    speed,
+    sceneId,
+  });
 
   return (
     <Text
       style={{
+        flex: 1,
         fontFamily: "PressStart2P",
         color: "#FFF",
         textAlign: "center",
         lineHeight: 20,
       }}
+      onPress={skipAnimation}
     >
       {displayedText}
     </Text>

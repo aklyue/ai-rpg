@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
+  Animated,
   Text,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
   TextInput,
   KeyboardAvoidingView,
   Platform,
@@ -23,7 +23,10 @@ import Exit from "../../assets/ui/exit.svg";
 import Save from "../../assets/ui/save.svg";
 import { useNavigation } from "@react-navigation/native";
 import { SettingsScreenNavigationProp } from "../../navigation/types";
-import { loadGameState, saveGameState } from "../../store/slices/gameSlice";
+import { saveGameState } from "../../store/slices/gameSlice";
+import SoundManager from "../../preload/soundManager";
+import useStatsReaction from "../../hooks/useStatsReaction";
+import useTypewriter from "../../hooks/useTypewriter";
 
 interface GameScreenProps {
   text: string;
@@ -38,7 +41,6 @@ interface GameScreenProps {
   onUserInput: (input: string) => void;
   loading?: boolean;
   error?: string;
-  onExitToMenu: () => void;
 }
 
 const GameScreen: React.FC<GameScreenProps> = ({
@@ -48,16 +50,18 @@ const GameScreen: React.FC<GameScreenProps> = ({
   onUserInput,
   loading,
   error,
-  onExitToMenu,
 }) => {
   const dispatch = useAppDispatch();
   const [fontsLoaded] = useFonts({
     PressStart2P: require("../../assets/fonts/PressStart2P/PressStart2P-Regular.ttf"),
   });
+
   const { day } = useAppSelector((state) => state.game);
   const { speed } = useAppSelector((state) => state.type);
   const navigation = useNavigation<SettingsScreenNavigationProp>();
   const [save, setSave] = useState(false);
+
+  const { showDamage, opacityAnim } = useStatsReaction();
 
   const {
     inputText,
@@ -71,14 +75,6 @@ const GameScreen: React.FC<GameScreenProps> = ({
     onUserInput,
   });
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      dispatch(saveGameState());
-    }, 600000);
-
-    return () => clearInterval(interval);
-  }, [dispatch]);
-
   if (!fontsLoaded) {
     return null;
   }
@@ -88,15 +84,32 @@ const GameScreen: React.FC<GameScreenProps> = ({
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "padding"}
     >
+      {showDamage && (
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            StyleSheet.absoluteFill,
+            { backgroundColor: "red", opacity: opacityAnim },
+          ]}
+        />
+      )}
       {save && <Text style={styles.save}>Игра сохранена</Text>}
       <View style={styles.topPanel}>
         <View style={styles.topLeftButtonsContainer}>
           <View style={styles.uiBtns}>
-            <TouchableOpacity onPress={onExitToMenu} style={styles.button}>
+            <TouchableOpacity
+              onPress={() => {
+                SoundManager.playClickSound();
+                dispatch(saveGameState());
+                navigation.navigate("Home");
+              }}
+              style={styles.button}
+            >
               <Exit width={40} height={40} color="#FFF" />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
+                SoundManager.playClickSound();
                 dispatch(saveGameState());
                 setSave(true);
                 setTimeout(() => {
@@ -111,9 +124,10 @@ const GameScreen: React.FC<GameScreenProps> = ({
 
           <View style={styles.uiBtns}>
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("Settings", { screen: "Game" })
-              }
+              onPress={() => {
+                SoundManager.playClickSound();
+                navigation.navigate("Settings", { screen: "Game" });
+              }}
               style={styles.button}
             >
               <Settings width={40} height={40} color="#FFF" />
@@ -243,7 +257,10 @@ const GameScreen: React.FC<GameScreenProps> = ({
 
       <ScrollView
         style={styles.textContainer}
-        contentContainerStyle={styles.scrollContentContainer}
+        contentContainerStyle={[
+          styles.scrollContentContainer,
+          { justifyContent: loading ? "center" : "flex-start" },
+        ]}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"
       >
@@ -393,6 +410,7 @@ const styles = StyleSheet.create({
   },
 
   scrollContentContainer: {
+    flexGrow: 1,
     paddingBottom: 30,
   },
 

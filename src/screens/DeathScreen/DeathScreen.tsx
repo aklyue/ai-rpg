@@ -1,16 +1,12 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { HomeScreenNavigationProp } from "../../navigation/types";
 import { resetGame } from "../../store/slices/gameSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
+import SoundManager from "../../preload/soundManager";
 
 const DeathScreen: React.FC = () => {
   const dispatch = useDispatch();
@@ -20,7 +16,8 @@ const DeathScreen: React.FC = () => {
   });
   const { day } = useSelector((state: RootState) => state.game);
 
-  const handleReturnToMenu = () => {
+  const mainMenu = () => {
+    SoundManager.playClickSound();
     navigation.navigate("Home");
     dispatch(resetGame());
   };
@@ -29,7 +26,6 @@ const DeathScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* Можно добавить фоновую картинку, если нужно */}
       <Text style={[styles.title, { fontFamily: "PressStart2P" }]}>
         Вы погибли
       </Text>
@@ -42,7 +38,7 @@ const DeathScreen: React.FC = () => {
         Прожито дней: {day}
       </Text>
 
-      <TouchableOpacity style={styles.button} onPress={handleReturnToMenu}>
+      <TouchableOpacity style={styles.button} onPress={mainMenu}>
         <Text style={[styles.buttonText, { fontFamily: "PressStart2P" }]}>
           В главное меню
         </Text>

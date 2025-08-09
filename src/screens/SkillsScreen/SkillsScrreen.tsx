@@ -1,9 +1,16 @@
 import React from "react";
-import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  Animated,
+} from "react-native";
 import Skills from "../../components/Skills";
 import { useNavigation } from "@react-navigation/native";
 import { DeathScreenNavigationProp } from "../../navigation/types";
 import { useFonts } from "expo-font";
+import SoundManager from "../../preload/soundManager";
 
 const SkillsScreen: React.FC = () => {
   const navigation = useNavigation<DeathScreenNavigationProp>();
@@ -13,6 +20,7 @@ const SkillsScreen: React.FC = () => {
   });
 
   const goBack = () => {
+    SoundManager.playClickSound();
     navigation.navigate("Game");
   };
 

@@ -7,6 +7,7 @@ import {
 } from "../../navigation/types";
 import { useNavigation } from "@react-navigation/native";
 import { useRest } from "../../store/slices/gameSlice";
+import SoundManager from "../../preload/soundManager";
 
 interface useGameActionsProps {
   stats: {
@@ -34,6 +35,7 @@ export const useGameActions = ({ stats, onUserInput }: useGameActionsProps) => {
   }, [stats.health]);
 
   const handleSend = () => {
+    SoundManager.playClickSound();
     if (inputText.trim()) {
       onUserInput(inputText.trim());
       setInputText("");
@@ -41,14 +43,17 @@ export const useGameActions = ({ stats, onUserInput }: useGameActionsProps) => {
   };
 
   const openInventory = () => {
+    SoundManager.playClickSound();
     navigation.navigate("Inventory");
   };
 
   const openSkills = () => {
+    SoundManager.playClickSound();
     navigation.navigate("Skills");
   };
 
   const rest = () => {
+    SoundManager.playClickSound();
     dispatch(useRest());
   };
 

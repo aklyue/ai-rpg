@@ -14,8 +14,6 @@ import { buildScenePrompt } from "../utils/buildScenePrompt";
 import { requestGigaChatScene } from "../api/gigachat";
 import { parseJsonFromText } from "../utils/parseJsonFromText";
 
-const STORAGE_KEY = "gameState";
-
 const initialState: GameState = {
   history: [],
   currentScene: initialScene,
@@ -32,7 +30,7 @@ export const saveGameState = createAsyncThunk<void, void, { state: RootState }>(
   async (_, thunkAPI) => {
     try {
       const state = thunkAPI.getState().game;
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      await AsyncStorage.setItem("gameState", JSON.stringify(state));
       console.log("Игра сохранена");
     } catch (err) {
       console.error("Ошибка сохранения игры:", err);
@@ -44,7 +42,7 @@ export const loadGameState = createAsyncThunk<GameState | null, void>(
   "game/loadGameState",
   async () => {
     try {
-      const saved = await AsyncStorage.getItem(STORAGE_KEY);
+      const saved = await AsyncStorage.getItem("gameState");
       if (saved) {
         console.log("Сохранёнка загружена");
         return JSON.parse(saved) as GameState;

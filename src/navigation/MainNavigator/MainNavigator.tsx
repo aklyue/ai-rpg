@@ -13,14 +13,21 @@ import { StyleSheet, View } from "react-native";
 import SkillsScreen from "../../screens/SkillsScreen";
 import SettingsScreen from "../../screens/SettingsScreen";
 import { useAppDispatch } from "../../store/hooks";
-import { loadGameState } from "../../store/slices/gameSlice";
+import { loadGameState, saveGameState } from "../../store/slices/gameSlice";
 
 const MainNavigator = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(loadGameState());
+
+    const interval = setInterval(() => {
+      dispatch(saveGameState());
+    }, 600000);
+
+    return () => clearInterval(interval);
   }, [dispatch]);
+
   return (
     <View style={styles.container}>
       <NavigationContainer>

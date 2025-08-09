@@ -5,6 +5,7 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
+  Animated,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
@@ -13,8 +14,11 @@ import { useNavigation } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { DeathScreenNavigationProp } from "../../navigation/types";
 import Item from "../../components/Items";
+import SoundManager from "../../preload/soundManager";
+import useStatsReaction from "../../hooks/useStatsReaction";
 
 const InventoryScreen: React.FC = () => {
+  const { showHeal, opacityAnim } = useStatsReaction();
   const [fontsLoaded] = useFonts({
     PressStart2P: require("../../assets/fonts/PressStart2P/PressStart2P-Regular.ttf"),
   });
@@ -24,7 +28,9 @@ const InventoryScreen: React.FC = () => {
   const items = useSelector((state: RootState) => state.game.inventory.items);
 
   const handleUseItem = (title: string) => {
+    SoundManager.playClickSound();
     dispatch(useItem(title));
+    navigation.navigate("Game");
   };
 
   const renderItem = ({ item }: { item: (typeof items)[0] }) => (
@@ -37,6 +43,7 @@ const InventoryScreen: React.FC = () => {
   );
 
   const goBack = () => {
+    SoundManager.playClickSound();
     navigation.navigate("Game");
   };
 
@@ -44,6 +51,15 @@ const InventoryScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
+      {showHeal && (
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            StyleSheet.absoluteFill,
+            { backgroundColor: "green", opacity: opacityAnim },
+          ]}
+        />
+      )}
       <Text style={[styles.header, { fontFamily: "PressStart2P" }]}>
         Инвентарь
       </Text>

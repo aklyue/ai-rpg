@@ -21,10 +21,6 @@ const GameScreenContainer = () => {
     }
   };
 
-  const onExitToMenu = () => {
-    navigation.navigate("Home");
-  };
-
   return (
     <GameScreen
       text={text}
@@ -33,7 +29,6 @@ const GameScreenContainer = () => {
       onUserInput={onUserInput}
       loading={loading}
       error={error}
-      onExitToMenu={onExitToMenu}
     />
   );
 };

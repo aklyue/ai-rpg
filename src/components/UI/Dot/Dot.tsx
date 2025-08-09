@@ -1,44 +1,19 @@
-import { useEffect, useRef } from "react";
-import { View, Animated, StyleSheet } from "react-native";
+import React from "react";
+import { Animated, StyleSheet } from "react-native";
 
 type DotProps = {
-  delay: number;
+  progress: Animated.Value;
+  offset: number;
 };
 
-const Dot = ({ delay }: DotProps) => {
-  const scale = useRef(new Animated.Value(0.5)).current;
+const Dot = ({ progress, offset }: DotProps) => {
+  const scale = progress.interpolate({
+    inputRange: [offset, offset + 0.25, offset + 0.5, 1 + offset],
+    outputRange: [0.5, 1, 0.5, 0.5],
+    extrapolate: "clamp",
+  });
 
-  useEffect(() => {
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(scale, {
-          toValue: 1,
-          duration: 500,
-          delay,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scale, {
-          toValue: 0.5,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-      ])
-    );
-    loop.start();
-
-    return () => loop.stop();
-  }, [delay, scale]);
-
-  return (
-    <Animated.View
-      style={[
-        styles.dot,
-        {
-          transform: [{ scale }],
-        },
-      ]}
-    />
-  );
+  return <Animated.View style={[styles.dot, { transform: [{ scale }] }]} />;
 };
 
 const styles = StyleSheet.create({

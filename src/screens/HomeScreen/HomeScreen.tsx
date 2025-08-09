@@ -6,10 +6,9 @@ import { useFonts } from "expo-font";
 import { useAppDispatch } from "../../store/hooks";
 import { loadGameState, resetGame } from "../../store/slices/gameSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import SoundManager from "../../preload/soundManager";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Home">;
-
-const STORAGE_KEY = "gameState";
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const dispatch = useAppDispatch();
@@ -21,7 +20,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     const checkSave = async () => {
-      const saved = await AsyncStorage.getItem(STORAGE_KEY);
+      const saved = await AsyncStorage.getItem("gameState");
       setHasSave(!!saved);
     };
     checkSave();
@@ -40,6 +39,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       </Text>
       <TouchableOpacity
         onPress={() => {
+          SoundManager.playClickSound();
           navigation.navigate("Game");
           dispatch(resetGame());
         }}
@@ -51,8 +51,8 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
+          SoundManager.playClickSound();
           navigation.navigate("Game");
-          dispatch(loadGameState());
         }}
         style={[styles.btn, !hasSave && styles.btnDisabled]}
         disabled={!hasSave}
@@ -62,7 +62,10 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => navigation.navigate("Settings", { screen: "Home" })}
+        onPress={() => {
+          SoundManager.playClickSound();
+          navigation.navigate("Settings", { screen: "Home" });
+        }}
         style={styles.btn}
       >
         <Text style={[styles.btnText, { fontFamily: "PressStart2P" }]}>

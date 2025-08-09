@@ -1,4 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import TypewriterSoundManager from "../../preload/typewriterSoundManager";
+
 const animationShownMap: Record<string, boolean> = {};
 
 interface TypewriterTextProps {
@@ -16,45 +19,65 @@ export const useTypewriter = ({
   const indexRef = useRef(0);
   const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    if (animationShownMap[sceneId]) {
-      setDisplayedText(fullText);
-      return;
-    }
+  const playTick = () => {
+    TypewriterSoundManager.playTick();
+  };
 
-    indexRef.current = 0;
-    setDisplayedText("");
-
+  const skipAnimation = () => {
     if (intervalIdRef.current) {
       clearInterval(intervalIdRef.current);
+      intervalIdRef.current = null;
     }
+    setDisplayedText(fullText);
+    animationShownMap[sceneId] = true;
+  };
 
-    intervalIdRef.current = setInterval(() => {
-      setDisplayedText((prev) => {
-        const nextChar = fullText.charAt(indexRef.current);
-        indexRef.current += 1;
+  useFocusEffect(
+    useCallback(() => {
+      if (animationShownMap[sceneId]) {
+        setDisplayedText(fullText);
+        return;
+      }
 
-        if (indexRef.current >= fullText.length) {
-          if (intervalIdRef.current) {
-            clearInterval(intervalIdRef.current);
-            intervalIdRef.current = null;
-          }
-          animationShownMap[sceneId] = true;
-        }
+      indexRef.current = 0;
+      setDisplayedText("");
 
-        return prev + nextChar;
-      });
-    }, speed);
-
-    return () => {
       if (intervalIdRef.current) {
         clearInterval(intervalIdRef.current);
-        intervalIdRef.current = null;
       }
-    };
-  }, [fullText, speed, sceneId]);
+
+      intervalIdRef.current = setInterval(() => {
+        setDisplayedText((prev) => {
+          const nextChar = fullText.charAt(indexRef.current);
+          indexRef.current += 1;
+
+          if (nextChar !== " ") {
+            playTick();
+          }
+
+          if (indexRef.current >= fullText.length) {
+            if (intervalIdRef.current) {
+              clearInterval(intervalIdRef.current);
+              intervalIdRef.current = null;
+            }
+            animationShownMap[sceneId] = true;
+          }
+
+          return prev + nextChar;
+        });
+      }, speed);
+
+      return () => {
+        if (intervalIdRef.current) {
+          clearInterval(intervalIdRef.current);
+          intervalIdRef.current = null;
+        }
+      };
+    }, [fullText, speed, sceneId])
+  );
 
   return {
     displayedText,
+    skipAnimation,
   };
 };
